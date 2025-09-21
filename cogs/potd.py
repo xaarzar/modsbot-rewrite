@@ -232,61 +232,62 @@ class Potd(Cog):
     )
     @commands.cooldown(1, 10, BucketType.user)
     async def potd_hint(self, ctx, number: int, hint_number: int = 1):
-    sheet = potd_utils.get_potd_sheet()
-    potd_row = potd_utils.get_potd_row(number, sheet)
-    maxhints = 6
-    if potd_row is None:
-        await ctx.send(f"There is no potd for day {number}. ")
-        return
-    elif hint_number not in range(1, maxhints + 1):
-        await ctx.send(f"Hint number should be from 1 to {maxhints}.")
-        return
-    else:
-        hint_col = f"potd_sheet_hint{hint_number}_col"
-        next_hint_col = f"potd_sheet_hint{hint_number + 1}_col"
-        if (
-            len(potd_row) <= cfg.Config.config[hint_col]
-            or potd_row[cfg.Config.config[hint_col]] is None
-            or potd_row[cfg.Config.config[hint_col]] == ""
-        ):
-            if hint_number == 1:
-                await ctx.send(
-                    f"There is no hint for POTD {number}. "
-                    "Would you like to contribute one? "
-                    f"Contribute by commenting in <https://docs.google.com/"
-                    f"spreadsheets/d/{cfg.Config.config['potd_sheet']}>"
-                )
-                return
-            else:
-                await ctx.send(
-                    f"There is no hint {hint_number} for POTD {number}. "
-                    "Would you like to contribute one? "
-                    f"Contribute by commenting in <https://docs.google.com/"
-                    f"spreadsheets/d/{cfg.Config.config['potd_sheet']}>"
-                )
-                return
+        sheet = potd_utils.get_potd_sheet()
+        potd_row = potd_utils.get_potd_row(number, sheet)
+        maxhints = 6
+        if potd_row is None:
+            await ctx.send(f"There is no potd for day {number}. ")
+            return
+        elif hint_number not in range(1, maxhints + 1):
+            await ctx.send(f"Hint number should be from 1 to {maxhints}.")
+            return
         else:
-            if hint_number == 1:
-                await ctx.send(f"Hint for POTD {number}:\n")
-            else:
-                await ctx.send(f"Hint {hint_number} for POTD {number}:\n")
-            
-            latex = potd_row[cfg.Config.config[hint_col]]
-            await ctx.send(
-                f"<@{cfg.Config.config['paradox_id']}> texsp \n"
-                f"||```latex\n{latex}```||",
-            )
-            if hint_number < maxhints:
-                if (
-                    len(potd_row) > cfg.Config.config[next_hint_col]
-                    and potd_row[cfg.Config.config[next_hint_col]]
-                    is not None
-                    and potd_row[cfg.Config.config[next_hint_col]] != ""
-                ):
+            hint_col = f"potd_sheet_hint{hint_number}_col"
+            next_hint_col = f"potd_sheet_hint{hint_number + 1}_col"
+            if (
+                len(potd_row) <= cfg.Config.config[hint_col]
+                or potd_row[cfg.Config.config[hint_col]] is None
+                or potd_row[cfg.Config.config[hint_col]] == ""
+            ):
+                if hint_number == 1:
                     await ctx.send(
-                        "There is another hint for this POTD. "
-                        f"Use `-hint {number} {hint_number + 1}` to get the hint."
+                        f"There is no hint for POTD {number}. "
+                        "Would you like to contribute one? "
+                        f"Contribute by commenting in <https://docs.google.com/"
+                        f"spreadsheets/d/{cfg.Config.config['potd_sheet']}>"
                     )
+                    return
+                else:
+                    await ctx.send(
+                        f"There is no hint {hint_number} for POTD {number}. "
+                        "Would you like to contribute one? "
+                        f"Contribute by commenting in <https://docs.google.com/"
+                        f"spreadsheets/d/{cfg.Config.config['potd_sheet']}>"
+                    )
+                    return         
+            else:
+                if hint_number == 1:
+                    await ctx.send(f"Hint for POTD {number}:\n")
+                else:
+                    await ctx.send(f"Hint {hint_number} for POTD {number}:\n")
+                
+                latex = potd_row[cfg.Config.config[hint_col]]
+                await ctx.send(
+                    f"<@{cfg.Config.config['paradox_id']}> texsp \n"
+                    f"||```latex\n{latex}```||",
+                )
+                
+                if hint_number < maxhints:
+                    if (
+                        len(potd_row) > cfg.Config.config[next_hint_col]
+                        and potd_row[cfg.Config.config[next_hint_col]]
+                        is not None
+                        and potd_row[cfg.Config.config[next_hint_col]] != ""
+                    ):
+                        await ctx.send(
+                            "There is another hint for this POTD. "
+                            f"Use `-hint {number} {hint_number + 1}` to get the hint."
+                        )
 
     @commands.command(
         aliases=["answer"],
