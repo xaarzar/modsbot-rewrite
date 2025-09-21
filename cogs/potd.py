@@ -237,6 +237,9 @@ class Potd(Cog):
         if potd_row is None:
             await ctx.send(f"There is no potd for day {number}. ")
             return
+        elif hint_number not in range(1, maxhints + 1):
+            await ctx.send(f"Hint number should be from 1 to {maxhints}.")
+            return
         else:
             maxhints = 6
             hint_col = f"potd_sheet_hint{hint_number}_col"
@@ -262,7 +265,7 @@ class Potd(Cog):
                         f"spreadsheets/d/{cfg.Config.config['potd_sheet']}>"
                     )
                     return
-            elif hint_number in range(1, maxhints + 1):
+            else:
                 if hint_number == 1:
                     await ctx.send(f"Hint for POTD {number}:\n")
                 else:
@@ -284,8 +287,6 @@ class Potd(Cog):
                             "There is another hint for this POTD. "
                             f"Use `-hint {number} {hint_number + 1}` to get the hint."
                         )
-            else:
-                await ctx.send(f"Hint number should be from 1 to {maxhints}.")
 
     @commands.command(
         aliases=["answer"],
